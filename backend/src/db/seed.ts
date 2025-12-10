@@ -140,6 +140,34 @@ export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
     .get();
   larsContacts.push(contact5);
 
+  const contact6 = db
+    .insert(schema.contacts)
+    .values({
+      sellerId: seller2.id,
+      name: 'Emma Svensson',
+      email: 'emma.svensson@hm.se',
+      company: 'H&M',
+      createdAt: SEED_DATE,
+      updatedAt: SEED_DATE,
+    })
+    .returning()
+    .get();
+  larsContacts.push(contact6);
+
+  const contact7 = db
+    .insert(schema.contacts)
+    .values({
+      sellerId: seller2.id,
+      name: 'Anders Gustafsson',
+      email: 'anders.gustafsson@ericsson.com',
+      company: 'Ericsson',
+      createdAt: SEED_DATE,
+      updatedAt: SEED_DATE,
+    })
+    .returning()
+    .get();
+  larsContacts.push(contact7);
+
   console.log(`Created ${mariaContacts.length} contacts for Maria`);
   console.log(`Created ${larsContacts.length} contacts for Lars`);
 
