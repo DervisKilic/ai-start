@@ -116,6 +116,70 @@ describe('Contact Routes', () => {
         })
       );
     });
+
+    it('should create contact with phone number', async () => {
+      const data = await expectCreated<{ contact: { name: string; phone: string | null; id: number } }>(
+        await post(ctx.app, '/api/contacts', ctx.sellerToken, {
+          name: 'Contact With Phone',
+          phone: '070-123 45 67',
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { name: string; phone: string | null } }>(
+        await get(ctx.app, `/api/contacts/${data.contact.id}`, ctx.sellerToken)
+      );
+      expect(retrieved.contact.name).toBe('Contact With Phone');
+      expect(retrieved.contact.phone).toBe('070-123 45 67');
+    });
+
+    it('should create contact without phone number', async () => {
+      const data = await expectCreated<{ contact: { name: string; phone: string | null; id: number } }>(
+        await post(ctx.app, '/api/contacts', ctx.sellerToken, {
+          name: 'Contact Without Phone',
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { name: string; phone: string | null } }>(
+        await get(ctx.app, `/api/contacts/${data.contact.id}`, ctx.sellerToken)
+      );
+      expect(retrieved.contact.name).toBe('Contact Without Phone');
+      expect(retrieved.contact.phone).toBeNull();
+    });
+
+    it('should return phone number in contact list', async () => {
+      // Create a contact with phone
+      await post(ctx.app, '/api/contacts', ctx.sellerToken, {
+        name: 'Listed Contact',
+        phone: '+46 70 123 45 67',
+      });
+
+      const data = await expectOk<{ contacts: Array<{ name: string; phone: string | null }> }>(
+        await get(ctx.app, '/api/contacts', ctx.sellerToken)
+      );
+      
+      const contactWithPhone = data.contacts.find(c => c.name === 'Listed Contact');
+      expect(contactWithPhone).toBeDefined();
+      expect(contactWithPhone?.phone).toBe('+46 70 123 45 67');
+    });
+
+    it('should accept various phone number formats', async () => {
+      const formats = [
+        '070-123 45 67',
+        '+46 70 123 45 67',
+        '0701234567',
+        '070 123 45 67',
+      ];
+
+      for (const phoneFormat of formats) {
+        const data = await expectCreated<{ contact: { phone: string | null } }>(
+          await post(ctx.app, '/api/contacts', ctx.sellerToken, {
+            name: `Contact ${phoneFormat}`,
+            phone: phoneFormat,
+          })
+        );
+        expect(data.contact.phone).toBe(phoneFormat);
+      }
+    });
   });
 
   describe('DELETE /api/contacts/:id', () => {

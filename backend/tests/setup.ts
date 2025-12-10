@@ -49,6 +49,7 @@ export function createTestDatabase() {
       seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name TEXT NOT NULL,
       email TEXT,
+      phone TEXT,
       company TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -272,6 +273,7 @@ export function createTestContact(
   overrides?: Partial<{
     name: string;
     email: string;
+    phone: string;
     company: string;
   }>
 ) {
@@ -282,6 +284,7 @@ export function createTestContact(
       sellerId,
       name: overrides?.name ?? 'Test Contact',
       email: overrides?.email ?? 'contact@test.com',
+      phone: overrides?.phone ?? null,
       company: overrides?.company ?? 'Test Corp',
       createdAt: now,
       updatedAt: now,

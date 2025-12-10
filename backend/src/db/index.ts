@@ -41,6 +41,7 @@ export function initializeDatabase() {
       seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name TEXT NOT NULL,
       email TEXT,
+      phone TEXT,
       company TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -49,6 +50,18 @@ export function initializeDatabase() {
     CREATE INDEX IF NOT EXISTS idx_contacts_seller_id ON contacts(seller_id);
     CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
   `);
+
+  // Migrate existing contacts table to add phone column if it doesn't exist
+  try {
+    const tableInfo = sqlite.prepare("PRAGMA table_info(contacts)").all() as Array<{ name: string }>;
+    const hasPhoneColumn = tableInfo.some(col => col.name === 'phone');
+    
+    if (!hasPhoneColumn) {
+      sqlite.exec(`ALTER TABLE contacts ADD COLUMN phone TEXT;`);
+    }
+  } catch (error) {
+    // Table might not exist yet, which is fine - it will be created above
+  }
 }
 
 // Reset database (drop all tables and recreate)
