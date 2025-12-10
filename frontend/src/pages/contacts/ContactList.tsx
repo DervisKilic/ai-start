@@ -32,6 +32,9 @@ function ContactTable({ contacts, deleteContact }: { contacts: Contact[]; delete
               Contact
             </th>
             <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+              Company
+            </th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
               Contact Info
             </th>
             <th className="px-6 py-4 text-right text-xs font-semibold text-dark-400 uppercase tracking-wider">
@@ -45,7 +48,7 @@ function ContactTable({ contacts, deleteContact }: { contacts: Contact[]; delete
               <>
                 {index > 0 && (
                   <tr key={`spacer-${contact.id}`}>
-                    <td colSpan={3} className="h-6 border-b border-dark-700/50"></td>
+                    <td colSpan={4} className="h-6 border-b border-dark-700/50"></td>
                   </tr>
                 )}
                 <tr key={contact.id} className="hover:bg-dark-800/50 transition-colors border-b border-dark-700/30">
@@ -58,6 +61,17 @@ function ContactTable({ contacts, deleteContact }: { contacts: Contact[]; delete
                         </p>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {contact.company ? (
+                      <p className="text-sm text-dark-300">
+                        {contact.company}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-dark-500 italic">
+                        No company
+                      </p>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     {contact.email ? (
