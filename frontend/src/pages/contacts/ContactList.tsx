@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useContacts, useDeleteContact } from '../../api/contacts';
 import { Button, Card, LoadingSpinner, EmptyState, Avatar } from '../../components/ui';
+import ContactDetailDrawer from './ContactDetailDrawer';
 
 import type { Contact } from '../../api/types';
 
@@ -18,7 +19,15 @@ function sortContacts(contacts: Contact[]): Contact[] {
 }
 
 // Component to render contact table
-function ContactTable({ contacts, deleteContact }: { contacts: Contact[]; deleteContact: ReturnType<typeof useDeleteContact> }) {
+function ContactTable({
+  contacts,
+  deleteContact,
+  onViewDetails,
+}: {
+  contacts: Contact[];
+  deleteContact: ReturnType<typeof useDeleteContact>;
+  onViewDetails: (contactId: number) => void;
+}) {
   const handleDelete = async (id: number) => {
     deleteContact.mutate(id);
   };
@@ -87,6 +96,14 @@ function ContactTable({ contacts, deleteContact }: { contacts: Contact[]; delete
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onViewDetails(contact.id)}
+                        className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+                      >
+                        View
+                      </Button>
                       <Link to={`/contacts/${contact.id}/edit`}>
                         <Button
                           variant="ghost"
@@ -120,11 +137,23 @@ function ContactTable({ contacts, deleteContact }: { contacts: Contact[]; delete
 export default function ContactList() {
   const { data: contacts = [], isLoading } = useContacts();
   const deleteContact = useDeleteContact();
+  const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Sort contacts alphabetically
   const sortedContacts = useMemo(() => {
     return sortContacts(contacts);
   }, [contacts]);
+
+  const handleViewDetails = (contactId: number) => {
+    setSelectedContactId(contactId);
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    setSelectedContactId(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -169,9 +198,20 @@ export default function ContactList() {
         </Card>
       ) : (
         <Card padding="none">
-          <ContactTable contacts={sortedContacts} deleteContact={deleteContact} />
+          <ContactTable
+            contacts={sortedContacts}
+            deleteContact={deleteContact}
+            onViewDetails={handleViewDetails}
+          />
         </Card>
       )}
+
+      {/* Contact Detail Drawer */}
+      <ContactDetailDrawer
+        contactId={selectedContactId}
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+      />
     </div>
   );
 }
