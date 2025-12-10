@@ -49,14 +49,26 @@ export function createTestDatabase() {
       seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name TEXT NOT NULL,
       email TEXT,
-      phone TEXT,
+      phone TEXT NOT NULL,
       company TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE interactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+      type TEXT NOT NULL CHECK(type IN ('call', 'meeting', 'email')),
+      date_time TEXT NOT NULL,
+      notes TEXT,
+      follow_up_needed INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
 
     CREATE INDEX idx_contacts_seller_id ON contacts(seller_id);
     CREATE INDEX idx_sessions_token ON sessions(token);
+    CREATE INDEX idx_interactions_contact_id ON interactions(contact_id);
   `);
 
   const db = drizzle(sqlite, { schema });
@@ -125,6 +137,7 @@ export async function seedTestData(db: ReturnType<typeof drizzle<typeof schema>>
       sellerId: seller.id,
       name: 'Test Contact',
       email: 'contact@test.com',
+      phone: '070-111 11 11',
       company: 'Test Corp',
       createdAt: now,
       updatedAt: now,
@@ -138,6 +151,7 @@ export async function seedTestData(db: ReturnType<typeof drizzle<typeof schema>>
       sellerId: seller2.id,
       name: 'Other Contact',
       email: 'other@test.com',
+      phone: '070-222 22 22',
       company: 'Other Corp',
       createdAt: now,
       updatedAt: now,
@@ -284,7 +298,7 @@ export function createTestContact(
       sellerId,
       name: overrides?.name ?? 'Test Contact',
       email: overrides?.email ?? 'contact@test.com',
-      phone: overrides?.phone ?? null,
+      phone: overrides?.phone ?? '070-000 00 00',
       company: overrides?.company ?? 'Test Corp',
       createdAt: now,
       updatedAt: now,

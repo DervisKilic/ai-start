@@ -74,18 +74,28 @@ function ContactTable({ contacts, deleteContact }: { contacts: Contact[]; delete
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    {contact.email ? (
+                    <div className="space-y-1">
+                      {contact.email && (
+                        <p className="text-sm text-dark-300">
+                          {contact.email}
+                        </p>
+                      )}
                       <p className="text-sm text-dark-300">
-                        {contact.email}
+                        {contact.phone}
                       </p>
-                    ) : (
-                      <p className="text-sm text-dark-500 italic">
-                        No email
-                      </p>
-                    )}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
+                      <Link to={`/contacts/${contact.id}/edit`}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-warm-400 hover:text-warm-300 hover:bg-warm-500/10"
+                        >
+                          Edit
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="sm"

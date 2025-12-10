@@ -5,13 +5,20 @@ import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import * as schema from '../db/schema.js';
 import { type AuthVariables } from '../middleware/auth.js';
-import { withEntityAccess } from './helpers.js';
+import { withEntityAccess, buildUpdateValues } from './helpers.js';
 import { ERROR_MESSAGES, ROLES } from '../constants.js';
 
 const createContactSchema = z.object({
   name: z.string().min(1),
   email: z.string().email().optional().nullable(),
-  phone: z.string().optional().nullable(),
+  phone: z.string().min(1),
+  company: z.string().optional().nullable(),
+});
+
+const updateContactSchema = z.object({
+  name: z.string().min(1).optional().nullable(),
+  email: z.string().email().optional().nullable(),
+  phone: z.string().min(1).optional(), // Optional but cannot be null if provided
   company: z.string().optional().nullable(),
 });
 
@@ -41,6 +48,26 @@ export function createContactRoutes(db: BetterSQLite3Database<typeof schema>) {
     return c.json({ contact: result.entity });
   });
 
+  // PUT /contacts/:id - Update contact
+  app.put('/:id', zValidator('json', updateContactSchema), (c) => {
+    const result = withEntityAccess<schema.Contact>(c, db, schema.contacts, 'Contact');
+    if (!result.success) return result.response;
+
+    const updates = c.req.valid('json');
+
+    // Prepare update values - only include fields that are provided
+    const updateValues = buildUpdateValues(updates, ['name', 'email', 'phone', 'company']);
+
+    const contact = db
+      .update(schema.contacts)
+      .set(updateValues)
+      .where(eq(schema.contacts.id, result.entity.id))
+      .returning()
+      .get();
+
+    return c.json({ contact });
+  });
+
   // POST /contacts - Create new contact
   app.post('/', zValidator('json', createContactSchema), (c) => {
     const user = c.get('user');
@@ -54,7 +81,7 @@ export function createContactRoutes(db: BetterSQLite3Database<typeof schema>) {
         sellerId: user.id,
         name: data.name,
         email: data.email ?? null,
-        phone: data.phone ?? null,
+        phone: data.phone, // Required - validation ensures it's present
         company: data.company ?? null,
         createdAt: now,
         updatedAt: now,

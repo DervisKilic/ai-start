@@ -1,28 +1,50 @@
-import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, type FormEvent } from 'react';
+import { useParams, Link } from 'react-router-dom';
 
-import { useCreateContact } from '../../api/contacts';
+import { useContact, useCreateContact, useUpdateContact } from '../../api/contacts';
 import { Button, Card, Input, LoadingSpinner, BackButton, ErrorMessage } from '../../components/ui';
 import { config } from '../../config';
 import { useFormSubmission } from '../../hooks/useFormSubmission';
 
-import type { Contact, CreateContactData } from '../../api/types';
+import type { Contact, CreateContactData, UpdateContactData } from '../../api/types';
 
 export default function ContactForm() {
+  const { id } = useParams<{ id: string }>();
+  const isEditing = !!id;
+  const contactId = id ? parseInt(id, 10) : 0;
+
+  const { data: existingContact, isLoading } = useContact(contactId);
   const createContact = useCreateContact();
+  const updateContact = useUpdateContact();
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     company: '',
   });
 
+  useEffect(() => {
+    if (existingContact) {
+      setFormData({
+        name: existingContact.name,
+        email: existingContact.email || '',
+        phone: existingContact.phone || '',
+        company: existingContact.company || '',
+      });
+    }
+  }, [existingContact]);
+
   const { error, isSubmitting, handleSubmit } = useFormSubmission<
-    CreateContactData,
+    CreateContactData | UpdateContactData,
     Contact
   >({
     onSubmit: async (data) => {
-      return await createContact.mutateAsync(data as CreateContactData);
+      if (isEditing) {
+        return await updateContact.mutateAsync({ id: contactId, data: data as UpdateContactData });
+      } else {
+        return await createContact.mutateAsync(data as CreateContactData);
+      }
     },
     onSuccess: () => {
       return '/contacts';
@@ -31,16 +53,27 @@ export default function ContactForm() {
       if (!data.name?.trim()) {
         return 'Name is required';
       }
+      if (!data.phone?.trim()) {
+        return 'Phone number is required';
+      }
       return null;
     },
   });
 
   const onSubmit = (e: FormEvent) => {
-    const data = {
-      name: formData.name.trim(),
-      email: formData.email.trim() || null,
-      company: formData.company.trim() || null,
-    };
+    const data: CreateContactData | UpdateContactData = isEditing
+      ? {
+          name: formData.name.trim(),
+          email: formData.email.trim() || null,
+          phone: formData.phone.trim(), // Required - validation ensures it's present
+          company: formData.company.trim() || null,
+        }
+      : {
+          name: formData.name.trim(),
+          email: formData.email.trim() || null,
+          phone: formData.phone.trim(), // Required - validation ensures it's present
+          company: formData.company.trim() || null,
+        };
     handleSubmit(e, data);
   };
 
@@ -48,9 +81,18 @@ export default function ContactForm() {
     setFormData({
       name: 'Mikael Pettersson',
       email: 'mikael.petterson@volvo.com',
+      phone: '070-123 45 67',
       company: 'Volvo AB',
     });
   };
+
+  if (isEditing && isLoading) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="md" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -58,8 +100,12 @@ export default function ContactForm() {
       <div className="flex items-center gap-4">
         <BackButton to="/contacts" />
         <div>
-          <h1 className="text-2xl font-bold text-white">New Contact</h1>
-          <p className="text-dark-400 mt-1">Add a new contact to your CRM</p>
+          <h1 className="text-2xl font-bold text-white">
+            {isEditing ? 'Edit Contact' : 'New Contact'}
+          </h1>
+          <p className="text-dark-400 mt-1">
+            {isEditing ? 'Update contact information' : 'Add a new contact to your CRM'}
+          </p>
         </div>
       </div>
 
@@ -68,7 +114,7 @@ export default function ContactForm() {
           <ErrorMessage error={error} />
 
           {/* Developer Tools: Fill Sample Data */}
-          {config.developerTools && (
+          {config.developerTools && !isEditing && (
             <div className="mb-4 pb-4 border-b border-dark-700">
               <button
                 type="button"
@@ -97,6 +143,15 @@ export default function ContactForm() {
           />
 
           <Input
+            label="Phone"
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            placeholder="070-123 45 67"
+            required
+          />
+
+          <Input
             label="Company"
             value={formData.company}
             onChange={(e) => setFormData({ ...formData, company: e.target.value })}
@@ -116,8 +171,10 @@ export default function ContactForm() {
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <LoadingSpinner size="sm" />
-                  Creating...
+                  Saving...
                 </span>
+              ) : isEditing ? (
+                'Save Changes'
               ) : (
                 'Create Contact'
               )}

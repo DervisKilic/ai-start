@@ -79,6 +79,7 @@ export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
 
   // Seed 5 contacts for seller1 (Maria)
   const mariaContacts = [];
+  const phoneNumbers = ['070-111 11 11', '070-222 22 22', '070-333 33 33', '070-444 44 44'];
   for (let i = 0; i < 4; i++) {
     const contact = db
       .insert(schema.contacts)
@@ -86,6 +87,7 @@ export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
         sellerId: seller1.id,
         name: swedishNames[i],
         email: `${swedishNames[i].toLowerCase().replace(' ', '.')}@${companies[i].toLowerCase().replace(/\s+/g, '')}.se`,
+        phone: phoneNumbers[i],
         company: companies[i],
         createdAt: SEED_DATE,
         updatedAt: SEED_DATE,
@@ -104,6 +106,7 @@ export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
       sellerId: seller2.id,
       name: 'Johan Nilsson',
       email: 'johan.nilsson@ikea.se',
+      phone: '070-555 55 55',
       company: 'IKEA Sverige',
       createdAt: SEED_DATE,
       updatedAt: SEED_DATE,
@@ -118,6 +121,7 @@ export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
       sellerId: seller2.id,
       name: 'Kristina Wallin',
       email: 'kristina.wallin@astrazeneca.com',
+      phone: '070-666 66 66',
       company: 'AstraZeneca Sverige',
       createdAt: SEED_DATE,
       updatedAt: SEED_DATE,
@@ -132,6 +136,7 @@ export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
       sellerId: seller2.id,
       name: 'Robert Lindgren',
       email: 'robert.lindgren@teliacompany.se',
+      phone: '070-777 77 77',
       company: 'Telia Company',
       createdAt: SEED_DATE,
       updatedAt: SEED_DATE,
@@ -146,6 +151,7 @@ export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
       sellerId: seller2.id,
       name: 'Emma Svensson',
       email: 'emma.svensson@hm.se',
+      phone: '070-888 88 88',
       company: 'H&M',
       createdAt: SEED_DATE,
       updatedAt: SEED_DATE,
@@ -160,6 +166,7 @@ export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
       sellerId: seller2.id,
       name: 'Anders Gustafsson',
       email: 'anders.gustafsson@ericsson.com',
+      phone: '070-999 99 99',
       company: 'Ericsson',
       createdAt: SEED_DATE,
       updatedAt: SEED_DATE,

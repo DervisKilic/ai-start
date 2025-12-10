@@ -3,6 +3,7 @@ import {
   setupTest,
   get,
   post,
+  put,
   del,
   expectOk,
   expectCreated,
@@ -75,6 +76,7 @@ describe('Contact Routes', () => {
         await post(ctx.app, '/api/contacts', ctx.sellerToken, {
           name: 'New Contact',
           email: 'new@contact.com',
+          phone: '070-123 45 67',
           company: 'New Corp',
         })
       );
@@ -86,18 +88,37 @@ describe('Contact Routes', () => {
       expect(retrieved.contact.sellerId).toBe(ctx.sellerId);
     });
 
-    it('should create contact with minimal data', async () => {
-      const data = await expectCreated<{ contact: { name: string; email: string | null; id: number } }>(
+    it('should create contact with minimal data (name and phone)', async () => {
+      const data = await expectCreated<{ contact: { name: string; email: string | null; phone: string; id: number } }>(
         await post(ctx.app, '/api/contacts', ctx.sellerToken, {
           name: 'Minimal Contact',
+          phone: '070-111 22 33',
         })
       );
 
-      const retrieved = await expectOk<{ contact: { name: string; email: string | null } }>(
+      const retrieved = await expectOk<{ contact: { name: string; email: string | null; phone: string } }>(
         await get(ctx.app, `/api/contacts/${data.contact.id}`, ctx.sellerToken)
       );
       expect(retrieved.contact.name).toBe('Minimal Contact');
       expect(retrieved.contact.email).toBeNull();
+      expect(retrieved.contact.phone).toBe('070-111 22 33');
+    });
+
+    it('should reject missing phone number', async () => {
+      await expectBadRequest(
+        await post(ctx.app, '/api/contacts', ctx.sellerToken, {
+          name: 'Contact Without Phone',
+        })
+      );
+    });
+
+    it('should reject empty phone number', async () => {
+      await expectBadRequest(
+        await post(ctx.app, '/api/contacts', ctx.sellerToken, {
+          name: 'Contact With Empty Phone',
+          phone: '',
+        })
+      );
     });
 
     it('should reject missing name', async () => {
@@ -132,19 +153,6 @@ describe('Contact Routes', () => {
       expect(retrieved.contact.phone).toBe('070-123 45 67');
     });
 
-    it('should create contact without phone number', async () => {
-      const data = await expectCreated<{ contact: { name: string; phone: string | null; id: number } }>(
-        await post(ctx.app, '/api/contacts', ctx.sellerToken, {
-          name: 'Contact Without Phone',
-        })
-      );
-
-      const retrieved = await expectOk<{ contact: { name: string; phone: string | null } }>(
-        await get(ctx.app, `/api/contacts/${data.contact.id}`, ctx.sellerToken)
-      );
-      expect(retrieved.contact.name).toBe('Contact Without Phone');
-      expect(retrieved.contact.phone).toBeNull();
-    });
 
     it('should return phone number in contact list', async () => {
       // Create a contact with phone
@@ -153,7 +161,7 @@ describe('Contact Routes', () => {
         phone: '+46 70 123 45 67',
       });
 
-      const data = await expectOk<{ contacts: Array<{ name: string; phone: string | null }> }>(
+      const data = await expectOk<{ contacts: Array<{ name: string; phone: string }> }>(
         await get(ctx.app, '/api/contacts', ctx.sellerToken)
       );
       
@@ -171,7 +179,7 @@ describe('Contact Routes', () => {
       ];
 
       for (const phoneFormat of formats) {
-        const data = await expectCreated<{ contact: { phone: string | null } }>(
+        const data = await expectCreated<{ contact: { phone: string } }>(
           await post(ctx.app, '/api/contacts', ctx.sellerToken, {
             name: `Contact ${phoneFormat}`,
             phone: phoneFormat,
@@ -179,6 +187,170 @@ describe('Contact Routes', () => {
         );
         expect(data.contact.phone).toBe(phoneFormat);
       }
+    });
+  });
+
+  describe('PUT /api/contacts/:id', () => {
+    it('should update own contact as seller', async () => {
+      const data = await expectOk<{ contact: { name: string } }>(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          name: 'Updated Contact Name',
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { name: string } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken)
+      );
+      expect(retrieved.contact.name).toBe('Updated Contact Name');
+    });
+
+    it('should update contact email', async () => {
+      const data = await expectOk<{ contact: { email: string | null } }>(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          email: 'updated@contact.com',
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { email: string | null } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken)
+      );
+      expect(retrieved.contact.email).toBe('updated@contact.com');
+    });
+
+    it('should update contact phone', async () => {
+      const data = await expectOk<{ contact: { phone: string } }>(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          phone: '070-123 45 67',
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { phone: string } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken)
+      );
+      expect(retrieved.contact.phone).toBe('070-123 45 67');
+    });
+
+    it('should reject setting phone to empty string', async () => {
+      await expectBadRequest(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          phone: '',
+        })
+      );
+    });
+
+    it('should reject setting phone to null', async () => {
+      await expectBadRequest(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          phone: null,
+        })
+      );
+    });
+
+    it('should update contact company', async () => {
+      const data = await expectOk<{ contact: { company: string | null } }>(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          company: 'Updated Corp',
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { company: string | null } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken)
+      );
+      expect(retrieved.contact.company).toBe('Updated Corp');
+    });
+
+    it('should update multiple fields at once', async () => {
+      const data = await expectOk<{ contact: { name: string; email: string | null; phone: string; company: string | null } }>(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          name: 'Fully Updated Contact',
+          email: 'full@update.com',
+          phone: '+46 70 123 45 67',
+          company: 'Updated Company',
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { name: string; email: string | null; phone: string; company: string | null } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken)
+      );
+      expect(retrieved.contact.name).toBe('Fully Updated Contact');
+      expect(retrieved.contact.email).toBe('full@update.com');
+      expect(retrieved.contact.phone).toBe('+46 70 123 45 67');
+      expect(retrieved.contact.company).toBe('Updated Company');
+    });
+
+    it('should update any contact as admin', async () => {
+      const data = await expectOk<{ contact: { name: string } }>(
+        await put(ctx.app, `/api/contacts/${ctx.contact2Id}`, ctx.adminToken, {
+          name: 'Admin Updated Contact',
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { name: string } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contact2Id}`, ctx.adminToken)
+      );
+      expect(retrieved.contact.name).toBe('Admin Updated Contact');
+    });
+
+    it('should deny update of other sellers contact', async () => {
+      await expectForbidden(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.seller2Token, {
+          name: 'Unauthorized Update',
+        })
+      );
+    });
+
+    it('should return 404 for non-existent contact', async () => {
+      await expectNotFound(
+        await put(ctx.app, '/api/contacts/9999', ctx.sellerToken, {
+          name: 'Updated',
+        })
+      );
+    });
+
+    it('should reject invalid email format', async () => {
+      await expectBadRequest(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          email: 'not-an-email',
+        })
+      );
+    });
+
+    it('should allow setting optional fields to null', async () => {
+      const data = await expectOk<{ contact: { email: string | null; company: string | null; phone: string } }>(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          email: null,
+          company: null,
+        })
+      );
+
+      const retrieved = await expectOk<{ contact: { email: string | null; company: string | null; phone: string } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken)
+      );
+      expect(retrieved.contact.email).toBeNull();
+      expect(retrieved.contact.company).toBeNull();
+      // Phone should still be present (not null)
+      expect(retrieved.contact.phone).toBeTruthy();
+    });
+
+    it('should update updatedAt timestamp', async () => {
+      const before = await expectOk<{ contact: { updatedAt: string } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken)
+      );
+
+      // Wait a bit to ensure timestamp difference
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      await expectOk(
+        await put(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken, {
+          name: 'Timestamp Test',
+        })
+      );
+
+      const after = await expectOk<{ contact: { updatedAt: string } }>(
+        await get(ctx.app, `/api/contacts/${ctx.contactId}`, ctx.sellerToken)
+      );
+
+      expect(new Date(after.contact.updatedAt).getTime()).toBeGreaterThan(new Date(before.contact.updatedAt).getTime());
     });
   });
 

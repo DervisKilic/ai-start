@@ -41,23 +41,47 @@ export function initializeDatabase() {
       seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name TEXT NOT NULL,
       email TEXT,
-      phone TEXT,
+      phone TEXT NOT NULL,
       company TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS interactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+      type TEXT NOT NULL CHECK(type IN ('call', 'meeting', 'email')),
+      date_time TEXT NOT NULL,
+      notes TEXT,
+      follow_up_needed INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
 
     CREATE INDEX IF NOT EXISTS idx_contacts_seller_id ON contacts(seller_id);
     CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
+    CREATE INDEX IF NOT EXISTS idx_interactions_contact_id ON interactions(contact_id);
   `);
 
-  // Migrate existing contacts table to add phone column if it doesn't exist
+  // Migrate existing contacts table
   try {
-    const tableInfo = sqlite.prepare("PRAGMA table_info(contacts)").all() as Array<{ name: string }>;
+    const tableInfo = sqlite.prepare("PRAGMA table_info(contacts)").all() as Array<{ name: string; notnull: number }>;
     const hasPhoneColumn = tableInfo.some(col => col.name === 'phone');
+    const phoneColumnInfo = tableInfo.find(col => col.name === 'phone');
+    const isPhoneNullable = phoneColumnInfo ? phoneColumnInfo.notnull === 0 : true;
     
     if (!hasPhoneColumn) {
-      sqlite.exec(`ALTER TABLE contacts ADD COLUMN phone TEXT;`);
+      // Add phone column with default value
+      sqlite.exec(`ALTER TABLE contacts ADD COLUMN phone TEXT DEFAULT '';`);
+      // Set default value for existing contacts
+      sqlite.exec(`UPDATE contacts SET phone = '' WHERE phone IS NULL;`);
+      // Make phone NOT NULL (SQLite doesn't support ALTER COLUMN, so we need to recreate)
+      // For now, we'll handle this in application logic
+    } else if (isPhoneNullable) {
+      // Phone column exists but is nullable - set default for NULL values
+      sqlite.exec(`UPDATE contacts SET phone = '' WHERE phone IS NULL;`);
+      // Note: SQLite doesn't support ALTER COLUMN to change NOT NULL constraint
+      // The schema definition will enforce this for new inserts/updates
     }
   } catch (error) {
     // Table might not exist yet, which is fine - it will be created above
@@ -67,6 +91,7 @@ export function initializeDatabase() {
 // Reset database (drop all tables and recreate)
 export function resetDatabase() {
   sqlite.exec(`
+    DROP TABLE IF EXISTS interactions;
     DROP TABLE IF EXISTS contacts;
     DROP TABLE IF EXISTS sessions;
     DROP TABLE IF EXISTS users;

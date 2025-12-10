@@ -51,6 +51,7 @@ export default function App() {
         <Route index element={<Navigate to="/contacts" replace />} />
         <Route path="contacts" element={<ContactList />} />
         <Route path="contacts/new" element={<ContactForm />} />
+        <Route path="contacts/:id/edit" element={<ContactForm />} />
         <Route
           path="sellers"
           element={

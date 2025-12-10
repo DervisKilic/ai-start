@@ -26,8 +26,20 @@ export const contacts = sqliteTable('contacts', {
   sellerId: integer('seller_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   email: text('email'),
-  phone: text('phone'),
+  phone: text('phone').notNull(),
   company: text('company'),
+  createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
+  updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),
+});
+
+// Interactions table
+export const interactions = sqliteTable('interactions', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  contactId: integer('contact_id').notNull().references(() => contacts.id, { onDelete: 'cascade' }),
+  type: text('type', { enum: ['call', 'meeting', 'email'] }).notNull(),
+  dateTime: text('date_time').notNull(),
+  notes: text('notes'),
+  followUpNeeded: integer('follow_up_needed', { mode: 'boolean' }).notNull().default(false),
   createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
   updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),
 });
@@ -36,6 +48,7 @@ export const contacts = sqliteTable('contacts', {
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
 export type Contact = typeof contacts.$inferSelect;
+export type Interaction = typeof interactions.$inferSelect;
 
 
 
