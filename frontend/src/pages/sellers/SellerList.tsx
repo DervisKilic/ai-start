@@ -13,12 +13,12 @@ export default function SellerList() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Sellers</h1>
-          <p className="text-dark-400 mt-1">Manage seller accounts</p>
+          <h1 className="text-3xl font-extrabold text-white bg-gradient-to-r from-white to-dark-200 bg-clip-text text-transparent">Sellers</h1>
+          <p className="text-dark-300 mt-2 font-medium">Manage seller accounts</p>
         </div>
         <Link to="/sellers/new">
           <Button>
@@ -55,45 +55,45 @@ export default function SellerList() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-dark-700">
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+                <tr className="border-b border-dark-700/60">
+                  <th className="px-6 py-5 text-left text-xs font-bold text-dark-300 uppercase tracking-wider">
                     Seller
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+                  <th className="px-6 py-5 text-left text-xs font-bold text-dark-300 uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+                  <th className="px-6 py-5 text-left text-xs font-bold text-dark-300 uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+                  <th className="px-6 py-5 text-left text-xs font-bold text-dark-300 uppercase tracking-wider">
                     Joined
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-dark-400 uppercase tracking-wider">
+                  <th className="px-6 py-5 text-right text-xs font-bold text-dark-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-dark-700">
+              <tbody className="divide-y divide-dark-700/40">
                 {sellers.map((seller) => (
-                  <tr key={seller.id} className="hover:bg-dark-800/50 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr key={seller.id} className="hover:bg-dark-800/70 backdrop-blur-sm transition-all duration-200 border-b border-dark-700/30">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-4">
                         <Avatar name={seller.name} size="md" gradient="warm" />
-                        <p className="text-sm font-medium text-white">{seller.name}</p>
+                        <p className="text-sm font-semibold text-white">{seller.name}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-dark-300">{seller.email}</p>
+                    <td className="px-6 py-5">
+                      <p className="text-sm text-dark-200">{seller.email}</p>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-5">
                       <Badge variant="warm">Seller</Badge>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-dark-400">
+                    <td className="px-6 py-5">
+                      <p className="text-sm text-dark-300">
                         {formatDate(seller.createdAt)}
                       </p>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-5">
                       <div className="flex items-center justify-end gap-2">
                         <Link to={`/sellers/${seller.id}/edit`}>
                           <Button variant="ghost" size="sm">

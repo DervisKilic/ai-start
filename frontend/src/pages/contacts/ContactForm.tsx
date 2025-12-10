@@ -95,15 +95,15 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
         <BackButton to="/contacts" />
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-3xl font-extrabold text-white bg-gradient-to-r from-white to-dark-200 bg-clip-text text-transparent">
             {isEditing ? 'Edit Contact' : 'New Contact'}
           </h1>
-          <p className="text-dark-400 mt-1">
+          <p className="text-dark-300 mt-2 font-medium">
             {isEditing ? 'Update contact information' : 'Add a new contact to your CRM'}
           </p>
         </div>
@@ -115,11 +115,11 @@ export default function ContactForm() {
 
           {/* Developer Tools: Fill Sample Data */}
           {config.developerTools && !isEditing && (
-            <div className="mb-4 pb-4 border-b border-dark-700">
+            <div className="mb-6 pb-6 border-b border-dark-700/60">
               <button
                 type="button"
                 onClick={fillSampleData}
-                className="text-xs text-dark-400 hover:text-warm-400 transition-colors"
+                className="text-xs text-dark-300 hover:text-warm-400 font-medium transition-colors duration-200"
               >
                 Fill sample data
               </button>
@@ -158,7 +158,7 @@ export default function ContactForm() {
             placeholder="Acme Inc."
           />
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-dark-700">
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-dark-700/60">
             <Link to="/contacts">
               <Button type="button" variant="ghost">
                 Cancel

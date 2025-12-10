@@ -100,26 +100,26 @@ export default function ContactDetailDrawer({ contactId, isOpen, onClose }: Cont
           <LoadingSpinner size="md" />
         </div>
       ) : contact ? (
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Contact Info Section */}
           <Card>
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-5">
               <Avatar name={contact.name} size="lg" />
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2">{contact.name}</h3>
-                <div className="space-y-1 text-sm text-dark-300">
-                  {contact.company && <p>Company: {contact.company}</p>}
-                  {contact.email && <p>Email: {contact.email}</p>}
-                  <p>Phone: {contact.phone}</p>
+                <h3 className="text-2xl font-extrabold text-white mb-3 bg-gradient-to-r from-white to-dark-200 bg-clip-text text-transparent">{contact.name}</h3>
+                <div className="space-y-2 text-sm text-dark-200">
+                  {contact.company && <p className="font-medium">Company: <span className="text-dark-300">{contact.company}</span></p>}
+                  {contact.email && <p className="font-medium">Email: <span className="text-dark-300">{contact.email}</span></p>}
+                  <p className="font-medium">Phone: <span className="text-dark-300">{contact.phone}</span></p>
                 </div>
               </div>
             </div>
           </Card>
 
           {/* Interactions Section */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h4 className="text-lg font-semibold text-white">Interactions</h4>
+              <h4 className="text-xl font-bold text-white">Interactions</h4>
             </div>
 
             {/* Error Message */}

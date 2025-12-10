@@ -77,26 +77,26 @@ export default function InteractionTimeline({
         const typeColor = getInteractionTypeColor(interaction.type);
 
         return (
-          <Card key={interaction.id} className="relative">
-            <div className="flex items-start gap-4">
+          <Card key={interaction.id} className="relative hover:shadow-2xl hover:shadow-dark-950/30 transition-all duration-300">
+            <div className="flex items-start gap-5">
               {/* Icon */}
-              <div className={`flex-shrink-0 ${typeColor}`}>
+              <div className={`flex-shrink-0 ${typeColor} p-2 rounded-lg bg-dark-800/50 backdrop-blur-sm`}>
                 {getInteractionIcon(interaction.type)}
               </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-4 mb-2">
+                <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-semibold text-white capitalize">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-bold text-white capitalize">
                         {interaction.type}
                       </span>
                       {interaction.followUpNeeded && (
                         <Badge variant="warm">Follow-up</Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-dark-400">
+                    <div className="flex items-center gap-2 text-xs text-dark-300 font-medium">
                       <span>{date}</span>
                       <span>•</span>
                       <span>{time}</span>
@@ -127,7 +127,7 @@ export default function InteractionTimeline({
 
                 {/* Notes Preview */}
                 {interaction.notes && (
-                  <p className="text-sm text-dark-300 mt-2 line-clamp-2">
+                  <p className="text-sm text-dark-200 mt-3 line-clamp-2 leading-relaxed">
                     {interaction.notes}
                   </p>
                 )}

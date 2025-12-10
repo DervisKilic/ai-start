@@ -36,44 +36,44 @@ function ContactTable({
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-dark-700">
-            <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+          <tr className="border-b border-dark-700/60">
+            <th className="px-6 py-5 text-left text-xs font-bold text-dark-300 uppercase tracking-wider">
               Contact
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+            <th className="px-6 py-5 text-left text-xs font-bold text-dark-300 uppercase tracking-wider">
               Company
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+            <th className="px-6 py-5 text-left text-xs font-bold text-dark-300 uppercase tracking-wider">
               Contact Info
             </th>
-            <th className="px-6 py-4 text-right text-xs font-semibold text-dark-400 uppercase tracking-wider">
+            <th className="px-6 py-5 text-right text-xs font-bold text-dark-300 uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-dark-700">
+        <tbody className="divide-y divide-dark-700/40">
           {contacts.map((contact, index) => {
             return (
               <>
                 {index > 0 && (
                   <tr key={`spacer-${contact.id}`}>
-                    <td colSpan={4} className="h-6 border-b border-dark-700/50"></td>
+                    <td colSpan={4} className="h-4"></td>
                   </tr>
                 )}
-                <tr key={contact.id} className="hover:bg-dark-800/50 transition-colors border-b border-dark-700/30">
-                  <td className="px-6 py-4">
+                <tr key={contact.id} className="hover:bg-dark-800/70 backdrop-blur-sm transition-all duration-200 border-b border-dark-700/30">
+                  <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
                       <Avatar name={contact.name} size="md" />
                       <div className="flex-1">
-                        <p className="text-white font-medium">
+                        <p className="text-white font-semibold">
                           {contact.name || 'No name'}
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-5">
                     {contact.company ? (
-                      <p className="text-sm text-dark-300">
+                      <p className="text-sm text-dark-200 font-medium">
                         {contact.company}
                       </p>
                     ) : (
@@ -82,19 +82,19 @@ function ContactTable({
                       </p>
                     )}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="space-y-1">
+                  <td className="px-6 py-5">
+                    <div className="space-y-1.5">
                       {contact.email && (
-                        <p className="text-sm text-dark-300">
+                        <p className="text-sm text-dark-200">
                           {contact.email}
                         </p>
                       )}
-                      <p className="text-sm text-dark-300">
+                      <p className="text-sm text-dark-200">
                         {contact.phone}
                       </p>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-5">
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         variant="ghost"
@@ -156,12 +156,12 @@ export default function ContactList() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Contacts</h1>
-          <p className="text-dark-400 mt-1">Manage your contact relationships</p>
+          <h1 className="text-3xl font-extrabold text-white bg-gradient-to-r from-white to-dark-200 bg-clip-text text-transparent">Contacts</h1>
+          <p className="text-dark-300 mt-2 font-medium">Manage your contact relationships</p>
         </div>
         <Link to="/contacts/new">
           <Button>

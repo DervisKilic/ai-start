@@ -12,7 +12,7 @@ const sizeClasses = {
 };
 
 const gradientClasses = {
-  warm: 'bg-gradient-to-br from-warm-500 to-warm-600',
+  warm: 'bg-gradient-to-br from-warm-500 to-warm-600 shadow-lg shadow-warm-500/30 ring-2 ring-warm-500/20',
 };
 
 export default function Avatar({ name, size = 'md', className = '', gradient = 'warm' }: AvatarProps) {

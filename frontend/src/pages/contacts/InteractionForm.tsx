@@ -100,17 +100,17 @@ export default function InteractionForm({
 
   return (
     <Card>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Interaction Type */}
           <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+            <label className="block text-sm font-semibold text-dark-200 mb-2">
               Type
             </label>
             <select
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value as 'call' | 'meeting' | 'email' })}
-              className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-warm-500"
+              className="w-full px-4 py-3 bg-dark-800/60 backdrop-blur-sm border border-dark-600/60 rounded-xl text-white focus:outline-none focus:ring-[3px] focus:ring-warm-500/50 focus:border-warm-500/30 transition-all duration-200"
               required
             >
               <option value="call">Call</option>
@@ -131,34 +131,34 @@ export default function InteractionForm({
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-dark-300 mb-2">
+          <label className="block text-sm font-semibold text-dark-200 mb-2">
             Notes
           </label>
           <textarea
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             rows={3}
-            className="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-warm-500 resize-none"
+            className="w-full px-4 py-3 bg-dark-800/60 backdrop-blur-sm border border-dark-600/60 rounded-xl text-white placeholder-dark-500 focus:outline-none focus:ring-[3px] focus:ring-warm-500/50 focus:border-warm-500/30 resize-none transition-all duration-200"
             placeholder="Add notes about this interaction..."
           />
         </div>
 
         {/* Follow-up Needed */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <input
             type="checkbox"
             id="followUpNeeded"
             checked={formData.followUpNeeded}
             onChange={(e) => setFormData({ ...formData, followUpNeeded: e.target.checked })}
-            className="w-4 h-4 text-warm-500 bg-dark-800 border-dark-600 rounded focus:ring-warm-500"
+            className="w-5 h-5 text-warm-500 bg-dark-800/60 backdrop-blur-sm border-dark-600/60 rounded focus:ring-warm-500/50 focus:ring-2 cursor-pointer"
           />
-          <label htmlFor="followUpNeeded" className="text-sm text-dark-300">
+          <label htmlFor="followUpNeeded" className="text-sm text-dark-200 font-medium cursor-pointer">
             Follow-up needed
           </label>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-dark-700/60">
           {onCancel && (
             <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
               Cancel

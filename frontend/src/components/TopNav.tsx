@@ -2,22 +2,23 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { navItems, adminItems } from '../config/navigation';
 import { navLinkBase, navLinkActive, navLinkInactive, cn } from '../utils/styles';
+import BackendStatus from './BackendStatus';
 
 export default function TopNav() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="w-full bg-dark-900 border-b border-dark-700">
+    <nav className="w-full bg-dark-900/80 backdrop-blur-md border-b border-dark-700/60 shadow-lg shadow-dark-950/20 sticky top-0 z-30">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between gap-6">
           {/* Logo and App Name */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-warm-400 to-warm-600 flex items-center justify-center shadow-lg shadow-warm-500/25">
-              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-warm-400 to-warm-600 flex items-center justify-center shadow-lg shadow-warm-500/30 ring-2 ring-warm-500/20">
+              <svg className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C9 5 7 8 7 11c0 2.5 1.5 4.5 3.5 5.5L9 22h6l-1.5-5.5C15.5 15.5 17 13.5 17 11c0-3-2-6-5-9zm0 4c1.5 2 2.5 4 2.5 5.5 0 1.5-1 2.5-2.5 2.5s-2.5-1-2.5-2.5C9.5 10 10.5 8 12 6z" />
               </svg>
             </div>
-            <h1 className="text-lg font-bold text-white">KeepWarm</h1>
+            <h1 className="text-xl font-extrabold text-white bg-gradient-to-r from-white to-dark-200 bg-clip-text text-transparent">KeepWarm</h1>
           </div>
 
           {/* Navigation Items */}
@@ -54,17 +55,20 @@ export default function TopNav() {
             )}
           </div>
 
-          {/* User Info and Logout */}
+          {/* User Info, Backend Status, and Logout */}
           <div className="flex items-center gap-4">
+            {/* Backend Status Indicator */}
+            <BackendStatus />
+
             {user && (
-              <div className="text-right">
-                <p className="text-sm font-medium text-white">{user.name}</p>
-                <p className="text-xs text-dark-400">{user.role === 'admin' ? 'Admin' : 'Seller'}</p>
+              <div className="text-right px-4 py-2 bg-dark-800/50 backdrop-blur-sm rounded-xl border border-dark-700/50">
+                <p className="text-sm font-semibold text-white">{user.name}</p>
+                <p className="text-xs text-dark-300">{user.role === 'admin' ? 'Admin' : 'Seller'}</p>
               </div>
             )}
             <button
               onClick={logout}
-              className="p-2 text-dark-400 hover:text-white hover:bg-dark-800 rounded-lg transition-colors"
+              className="p-2.5 text-dark-300 hover:text-white hover:bg-dark-800/70 backdrop-blur-sm rounded-xl transition-all duration-200 hover:translate-y-[-1px] border border-transparent hover:border-dark-700/50"
               title="Logout"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

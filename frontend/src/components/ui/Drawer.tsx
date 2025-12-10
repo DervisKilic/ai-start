@@ -41,22 +41,22 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Drawer */}
       <div
-        className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-dark-900 border-l border-dark-700 z-50 shadow-2xl transform transition-transform duration-300 ease-out overflow-y-auto"
+        className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-dark-900/95 backdrop-blur-xl border-l border-dark-700/60 z-50 shadow-2xl shadow-dark-950/50 transform transition-transform duration-300 ease-out overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'drawer-title' : undefined}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-dark-900/95 backdrop-blur-sm border-b border-dark-700 z-10 px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-dark-900/90 backdrop-blur-xl border-b border-dark-700/60 z-10 px-6 py-5 flex items-center justify-between shadow-lg shadow-dark-950/20">
           {title && (
-            <h2 id="drawer-title" className="text-2xl font-bold text-white">
+            <h2 id="drawer-title" className="text-2xl font-extrabold text-white bg-gradient-to-r from-white to-dark-200 bg-clip-text text-transparent">
               {title}
             </h2>
           )}
@@ -74,7 +74,7 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
         </div>
 
         {/* Content */}
-        <div className="p-6">{children}</div>
+        <div className="p-6 md:p-8">{children}</div>
       </div>
     </>
   );
